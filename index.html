@@ -1,0 +1,89 @@
+<html>
+<head>
+<title>BlackJack</title>
+<script>
+
+var baraja = [];
+
+for(var i=1;i<=13;i++){
+  var j = i;
+  if(j>10){j=10;}
+  baraja[baraja.length]={palo:"corazon",valor:j};
+  baraja[baraja.length]={palo:"diamante",valor:j};
+  baraja[baraja.length]={palo:"pica",valor:j};
+  baraja[baraja.length]={palo:"trebol",valor:j};
+}
+
+function puntua(mano){
+    var n = mano.length;
+    var puntos=0;
+    for(var i=0;i<n;i++){
+      puntos += mano[i].valor;
+    }
+    return puntos;
+}
+
+var Croupier = {};
+Croupier.mano = [];
+Croupier.barajar = function(){
+  for(var i=0;i<100;i++){
+    var pos1 = Math.round(Math.random()*51);
+    var pos2 = Math.round(Math.random()*51);
+    var aux = baraja[pos1];
+    baraja[pos1] = baraja[pos2];
+    baraja[pos2] = aux;
+  }
+};
+
+Croupier.dar_carta = function(Persona){
+  Persona.mano[Persona.mano.length]=baraja[baraja.length-1];
+  baraja.length--;
+};
+
+Croupier.repartir = function(){
+  this.dar_carta(Jugador);
+  this.dar_carta(Jugador);
+  this.dar_carta(this);
+  this.dar_carta(this);
+};
+
+Croupier.puntuar = function(){
+  var pCroupier = puntua(Croupier.mano);
+  var pJugador = puntua(Jugador.mano);
+  if((pJugador>21)||(pCroupier>pJugador)){
+    console.log("Gano Croupier con "+pCroupier+" puntos contra "+pJugador+" puntos del Jugador");
+  }
+  else{
+    console.log("Gano Jugador con "+pJugador+" puntos contra "+pCroupier+" puntos del Croupier");
+  }
+};
+
+
+var Jugador = {};
+Jugador.mano = [];
+Jugador.pasar = function(){
+  if((puntua(this.mano))>=14){
+    return true;
+  }
+  return false;
+};
+Jugador.pedir_carta = function(){
+  Croupier.dar_carta(this);
+};
+
+
+function blackjack(){
+  Croupier.barajar();
+  Croupier.repartir();
+  while(!Jugador.pasar()){
+    Jugador.pedir_carta();
+  }
+  Croupier.puntuar();
+}
+
+</script>
+</head>
+<body>
+
+</body>
+</html>
